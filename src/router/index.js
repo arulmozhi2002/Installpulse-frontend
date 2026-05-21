@@ -41,16 +41,15 @@ const router = createRouter({
 })
 
 // Protect all /app routes with a simple local authentication guard
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   const isAuthenticated = localStorage.getItem('installpulse_auth') === 'true'
   
   if (to.path.startsWith('/app') && !isAuthenticated) {
-    next('/') // Redirect to login page if not logged in
+    return '/' // Redirect to login page if not logged in
   } else if (to.path === '/' && isAuthenticated) {
-    next('/app/dashboard') // Redirect to dashboard if already logged in
-  } else {
-    next() // Proceed normally
+    return '/app/dashboard' // Redirect to dashboard if already logged in
   }
+  return true // Proceed normally
 })
 
 export default router
