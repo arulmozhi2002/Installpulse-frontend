@@ -9,7 +9,7 @@ let pollInterval = null
 
 const fetchMessages = async () => {
   try {
-    const res = await axios.get('http://localhost:3000/api/messages')
+    const res = await axios.get('https://installpulse-serverside.onrender.com/api/messages')
     messages.value = res.data
   } catch (error) {
     console.error("Failed to load messages", error)

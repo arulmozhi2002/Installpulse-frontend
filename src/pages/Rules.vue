@@ -9,7 +9,7 @@ const newRule = ref({ keyword: '', severity: 'success', active: true })
 
 onMounted(async () => {
   try {
-    const res = await axios.get('http://localhost:3000/api/rules')
+    const res = await axios.get('https://installpulse-serverside.onrender.com/api/rules')
     rules.value = res.data
   } catch (error) {
     console.error("Failed to load rules", error)
@@ -18,7 +18,7 @@ onMounted(async () => {
 
 const saveRules = async () => {
   try {
-    await axios.post('http://localhost:3000/api/rules', { rules: rules.value })
+    await axios.post('https://installpulse-serverside.onrender.com/api/rules', { rules: rules.value })
   } catch (error) {
     console.error("Failed to save rules", error)
   }

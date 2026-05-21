@@ -12,7 +12,7 @@ let pollInterval = null
 
 const fetchMessages = async () => {
   try {
-    const res = await axios.get('http://localhost:3000/api/messages')
+    const res = await axios.get('https://installpulse-serverside.onrender.com/api/messages')
     messages.value = res.data
   } catch (error) {
     console.error("Failed to load messages", error)
@@ -23,7 +23,7 @@ const simulateMsg = async () => {
   if (!simulateText.value) return
   isSimulating.value = true
   try {
-    await axios.post('http://localhost:3000/api/simulate', { text: simulateText.value })
+    await axios.post('https://installpulse-serverside.onrender.com/api/simulate', { text: simulateText.value })
     simulateText.value = ''
     await fetchMessages()
   } catch (error) {

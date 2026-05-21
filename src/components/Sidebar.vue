@@ -15,7 +15,7 @@ let pollInterval = null
 
 const checkStatus = async () => {
   try {
-    const res = await axios.get('http://localhost:3000/api/status')
+    const res = await axios.get('https://installpulse-serverside.onrender.com/api/status')
     if (res.data.status === 'connected') {
       phoneNumber.value = res.data.number || 'Device Connected'
     } else {

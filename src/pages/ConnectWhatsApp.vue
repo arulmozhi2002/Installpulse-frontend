@@ -10,7 +10,7 @@ let pollInterval = null
 
 const checkStatus = async () => {
   try {
-    const res = await axios.get('http://localhost:3000/api/status')
+    const res = await axios.get('https://installpulse-serverside.onrender.com/api/status')
     status.value = res.data.status
     qrText.value = res.data.qr
     phoneNumber.value = res.data.number || ''
