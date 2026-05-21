@@ -97,7 +97,7 @@ const qrImageUrl = computed(() => {
               <p class="text-[#8696a0]">Syncing messages, please wait...</p>
             </div>
             
-            <div v-else-if="status === 'disconnected' || !qrText" class="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center">
+            <div v-else-if="status === 'disconnected' && !qrText" class="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center">
               <Loader2 class="w-10 h-10 text-[#00a884] animate-spin mb-4" />
               <p class="text-[#41525d] font-medium text-lg">Generating QR Code...</p>
             </div>
