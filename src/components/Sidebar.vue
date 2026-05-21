@@ -3,15 +3,23 @@ import {
   LayoutDashboard, 
   MessageSquare, 
   Cpu,
-  Smartphone
+  Smartphone,
+  LogOut,
+  Activity
 } from 'lucide-vue-next'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 
 const route = useRoute()
+const router = useRouter()
 const phoneNumber = ref('')
 let pollInterval = null
+
+const handleLogout = () => {
+  localStorage.removeItem('installpulse_auth')
+  router.push('/')
+}
 
 const checkStatus = async () => {
   try {
@@ -73,6 +81,16 @@ const navigation = [
         />
         {{ item.name }}
       </router-link>
+
+      <div class="pt-4 mt-4 border-t border-slate-700/50">
+        <button 
+          @click="handleLogout"
+          class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200 group"
+        >
+          <LogOut class="w-5 h-5 transition-colors group-hover:text-red-400" />
+          <span class="font-medium">Logout</span>
+        </button>
+      </div>
     </nav>
     
     <!-- User / Connection Status -->

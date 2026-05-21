@@ -5,10 +5,24 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const isSignUp = ref(false)
+const email = ref('')
+const password = ref('')
+const errorMsg = ref('')
 
 const handleAuth = () => {
-  // Simple fake auth routing directly to connect
-  router.push('/app/connect')
+  if (isSignUp.value) {
+    errorMsg.value = "Sign up is disabled for this private prototype. Please sign in."
+    return
+  }
+
+  // Hardcoded secure login
+  if (email.value === 'admin@installpulse.com' && password.value === 'admin123') {
+    localStorage.setItem('installpulse_auth', 'true')
+    errorMsg.value = ''
+    router.push('/app/connect')
+  } else {
+    errorMsg.value = "Invalid email or password"
+  }
 }
 </script>
 
@@ -39,7 +53,7 @@ const handleAuth = () => {
               Full Name
             </label>
             <div class="mt-1">
-              <input id="name" name="name" type="text" required class="appearance-none block w-full px-3 py-2 border border-slate-700 rounded-lg shadow-sm bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="John Doe">
+              <input id="name" name="name" type="text" class="appearance-none block w-full px-3 py-2 border border-slate-700 rounded-lg shadow-sm bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="John Doe">
             </div>
           </div>
 
@@ -48,7 +62,7 @@ const handleAuth = () => {
               Email address
             </label>
             <div class="mt-1">
-              <input id="email" name="email" type="email" required class="appearance-none block w-full px-3 py-2 border border-slate-700 rounded-lg shadow-sm bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="admin@company.com">
+              <input v-model="email" id="email" name="email" type="email" required class="appearance-none block w-full px-3 py-2 border border-slate-700 rounded-lg shadow-sm bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="admin@installpulse.com">
             </div>
           </div>
 
@@ -57,8 +71,12 @@ const handleAuth = () => {
               Password
             </label>
             <div class="mt-1">
-              <input id="password" name="password" type="password" required class="appearance-none block w-full px-3 py-2 border border-slate-700 rounded-lg shadow-sm bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="••••••••">
+              <input v-model="password" id="password" name="password" type="password" required class="appearance-none block w-full px-3 py-2 border border-slate-700 rounded-lg shadow-sm bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="********">
             </div>
+          </div>
+          
+          <div v-if="errorMsg" class="text-red-400 text-sm text-center font-medium bg-red-400/10 py-2 rounded-lg">
+            {{ errorMsg }}
           </div>
 
           <div>
