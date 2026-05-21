@@ -11,18 +11,29 @@ const errorMsg = ref('')
 
 const handleAuth = () => {
   if (isSignUp.value) {
-    errorMsg.value = "Sign up is disabled for this private prototype. Please sign in."
-    return
+    if (!email.value || !password.value || email.value.length < 5) {
+      errorMsg.value = "Please provide a valid email and password"
+      return
+    }
+  } else {
+    if (!email.value || !password.value) {
+      errorMsg.value = "Email and password are required"
+      return
+    }
   }
 
-  // Hardcoded secure login
-  if (email.value === 'admin@installpulse.com' && password.value === 'admin123') {
-    localStorage.setItem('installpulse_auth', 'true')
-    errorMsg.value = ''
-    router.push('/app/connect')
-  } else {
-    errorMsg.value = "Invalid email or password"
+  // Treat email prefix as unique Tenant ID
+  const tenantId = email.value.split('@')[0].replace(/[^a-zA-Z0-9]/g, '');
+  
+  if (tenantId.length < 3) {
+      errorMsg.value = "Email prefix is too short. Try a different email."
+      return
   }
+
+  localStorage.setItem('installpulse_auth', 'true')
+  localStorage.setItem('installpulse_tenant', tenantId)
+  errorMsg.value = ''
+  router.push('/app/connect')
 }
 </script>
 
