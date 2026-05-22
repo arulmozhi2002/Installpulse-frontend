@@ -18,6 +18,10 @@ export const useAppStore = defineStore('app', () => {
   let messagesSubscribers = 0
 
   const fetchMessages = async () => {
+    if (status.value !== 'connected') {
+      messages.value = []
+      return
+    }
     try {
       const res = await axios.get(`${BASE}/api/messages`)
       messages.value = res.data
@@ -48,6 +52,7 @@ export const useAppStore = defineStore('app', () => {
     status.value = 'disconnected'
     qrText.value = null
     phoneNumber.value = ''
+    messages.value = []
     await fetchStatus()
   }
 
@@ -58,9 +63,11 @@ export const useAppStore = defineStore('app', () => {
       const tick = async () => {
         const prev = status.value
         await fetchStatus()
-        // Immediately load messages the moment connection is detected
+        // Load messages when connected, clear them when disconnected
         if (prev !== 'connected' && status.value === 'connected') {
           fetchMessages()
+        } else if (prev === 'connected' && status.value !== 'connected') {
+          messages.value = []
         }
         if (statusSubscribers > 0) {
           // Poll fast while waiting for QR scan, slow once connected
