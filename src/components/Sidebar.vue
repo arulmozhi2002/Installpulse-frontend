@@ -1,45 +1,32 @@
 <script setup>
-import { 
-  LayoutDashboard, 
-  MessageSquare, 
+import {
+  LayoutDashboard,
+  MessageSquare,
   Cpu,
   Smartphone,
   LogOut,
   Activity
 } from 'lucide-vue-next'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, onUnmounted } from 'vue'
-import axios from 'axios'
+import { computed, onMounted, onUnmounted } from 'vue'
+import { useAppStore } from '../stores/useAppStore'
 
 const route = useRoute()
 const router = useRouter()
-const phoneNumber = ref('')
-let pollInterval = null
+const store = useAppStore()
+
+const phoneNumber = computed(() =>
+  store.status === 'connected' ? (store.phoneNumber || 'Device Connected') : 'Not connected'
+)
 
 const handleLogout = () => {
   localStorage.removeItem('installpulse_auth')
   router.push('/')
 }
 
-const checkStatus = async () => {
-  try {
-    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/status' : 'http://localhost:3000/api/status'))
-    if (res.data.status === 'connected') {
-      phoneNumber.value = res.data.number || 'Device Connected'
-    } else {
-      phoneNumber.value = 'Not connected'
-    }
-  } catch (e) {}
-}
-
-onMounted(() => {
-  checkStatus()
-  pollInterval = setInterval(checkStatus, 3000)
-})
-
-onUnmounted(() => {
-  if (pollInterval) clearInterval(pollInterval)
-})
+let stopPolling = null
+onMounted(() => { stopPolling = store.startStatusPolling() })
+onUnmounted(() => { stopPolling?.() })
 
 const navigation = [
   { name: 'Connect WhatsApp', path: '/app/connect', icon: Smartphone },
@@ -106,10 +93,3 @@ const navigation = [
   </aside>
 </template>
 
-<script>
-// Activity icon for logo
-import { Activity } from 'lucide-vue-next'
-export default {
-  components: { Activity }
-}
-</script>

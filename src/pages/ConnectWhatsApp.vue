@@ -1,51 +1,29 @@
 <script setup>
 import { Smartphone, Check, Loader2, MessageSquare } from 'lucide-vue-next'
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import axios from 'axios'
+import { computed, onMounted, onUnmounted } from 'vue'
+import { useAppStore } from '../stores/useAppStore'
 
-const status = ref('disconnected')
-const qrText = ref(null)
-const phoneNumber = ref('')
-const recentMessages = ref([])
-let pollInterval = null
+const store = useAppStore()
 
-const fetchRecentMessages = async () => {
-  if (status.value !== 'connected') return;
-  try {
-    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/messages' : 'http://localhost:3000/api/messages'))
-    recentMessages.value = res.data.slice(0, 4) // Show top 4 recent messages
-  } catch (error) {
-    console.error("Failed to load messages", error)
-  }
-}
-
-const checkStatus = async () => {
-  try {
-    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/status' : 'http://localhost:3000/api/status'))
-    status.value = res.data.status
-    qrText.value = res.data.qr
-    phoneNumber.value = res.data.number || ''
-    
-    if (status.value === 'connected') {
-        fetchRecentMessages();
-    }
-  } catch (error) {
-    console.error("Failed to fetch WhatsApp status", error)
-  }
-}
-
-onMounted(() => {
-  checkStatus()
-  pollInterval = setInterval(checkStatus, 2000)
-})
-
-onUnmounted(() => {
-  if (pollInterval) clearInterval(pollInterval)
-})
+const status = computed(() => store.status)
+const qrText = computed(() => store.qrText)
+const phoneNumber = computed(() => store.phoneNumber)
+const recentMessages = computed(() => store.messages.slice(0, 4))
 
 const qrImageUrl = computed(() => {
   if (!qrText.value) return null
   return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrText.value)}`
+})
+
+let stopStatusPolling = null
+let stopMessagesPolling = null
+onMounted(() => {
+  stopStatusPolling = store.startStatusPolling()
+  stopMessagesPolling = store.startMessagesPolling()
+})
+onUnmounted(() => {
+  stopStatusPolling?.()
+  stopMessagesPolling?.()
 })
 </script>
 

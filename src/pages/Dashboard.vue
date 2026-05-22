@@ -1,29 +1,15 @@
 <script setup>
 import { AlertCircle, CheckCircle2, Clock, Activity, MessageSquare } from 'lucide-vue-next'
 import KpiCard from '../components/KpiCard.vue'
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import axios from 'axios'
+import { computed, onMounted, onUnmounted } from 'vue'
+import { useAppStore } from '../stores/useAppStore'
 
-const messages = ref([])
-let pollInterval = null
+const store = useAppStore()
+const messages = computed(() => store.messages)
 
-const fetchMessages = async () => {
-  try {
-    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/messages' : 'http://localhost:3000/api/messages'))
-    messages.value = res.data
-  } catch (error) {
-    console.error("Failed to load messages", error)
-  }
-}
-
-onMounted(() => {
-  fetchMessages()
-  pollInterval = setInterval(fetchMessages, 3000)
-})
-
-onUnmounted(() => {
-  if (pollInterval) clearInterval(pollInterval)
-})
+let stopPolling = null
+onMounted(() => { stopPolling = store.startMessagesPolling() })
+onUnmounted(() => { stopPolling?.() })
 
 // Compute KPIs based on real data
 const criticalAlerts = computed(() => messages.value.filter(m => m.severity === 'danger').length)

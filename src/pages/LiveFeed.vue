@@ -1,31 +1,20 @@
 <script setup>
 import { Search, Filter } from 'lucide-vue-next'
 import MessageCard from '../components/MessageCard.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useAppStore } from '../stores/useAppStore'
 
-import { ref, onMounted, onUnmounted } from 'vue'
-import axios from 'axios'
-
-const messages = ref([])
+const store = useAppStore()
+const messages = computed(() => store.messages)
 const simulateText = ref('')
 const isSimulating = ref(false)
-let pollInterval = null
-
-const fetchMessages = async () => {
-  try {
-    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/messages' : 'http://localhost:3000/api/messages'))
-    messages.value = res.data
-  } catch (error) {
-    console.error("Failed to load messages", error)
-  }
-}
 
 const simulateMsg = async () => {
   if (!simulateText.value) return
   isSimulating.value = true
   try {
-    await axios.post((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/simulate' : 'http://localhost:3000/api/simulate'), { text: simulateText.value })
+    await store.simulate(simulateText.value)
     simulateText.value = ''
-    await fetchMessages()
   } catch (error) {
     console.error("Simulation failed", error)
   } finally {
@@ -33,14 +22,9 @@ const simulateMsg = async () => {
   }
 }
 
-onMounted(() => {
-  fetchMessages()
-  pollInterval = setInterval(fetchMessages, 3000)
-})
-
-onUnmounted(() => {
-  if (pollInterval) clearInterval(pollInterval)
-})
+let stopPolling = null
+onMounted(() => { stopPolling = store.startMessagesPolling() })
+onUnmounted(() => { stopPolling?.() })
 </script>
 
 <template>

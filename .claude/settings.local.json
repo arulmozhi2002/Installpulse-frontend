@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls *)",
+      "Bash(find D:\\\\\\\\whatsapp-frontend *)",
+      "Bash(find \"D:\\\\\\\\whatsapp-frontend\" -maxdepth 3 -type f \\\\\\( -name \"*store*\" -o -name \"*cache*\" -o -name \"*db*\" -o -name \"*memory*\" \\\\\\))",
+      "Bash(find \"D:\\\\\\\\whatsapp-frontend\" -maxdepth 2 -type f -name \"*.config.js\" -o -name \"*.config.json\")",
+      "Bash(find \"D:\\\\\\\\whatsapp-frontend\\\\\\\\src\" -type f -name \"*.js\" -o -name \"*.vue\")",
+      "Bash(find D:\\\\\\\\whatsapp-frontend\\\\\\\\src *)"
+    ]
+  }
+}
