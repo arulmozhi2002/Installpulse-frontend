@@ -8,7 +8,9 @@
       "Bash(find \"D:\\\\\\\\whatsapp-frontend\\\\\\\\src\" -type f -name \"*.js\" -o -name \"*.vue\")",
       "Bash(find D:\\\\\\\\whatsapp-frontend\\\\\\\\src *)",
       "PowerShell(Get-ChildItem -Path \"D:\\\\whatsapp-frontend\" | Where-Object { $_.Name -ne \"node_modules\" } | Select-Object Name, LastWriteTime)",
-      "PowerShell(Get-ChildItem -Path \"D:\\\\whatsapp-frontend\\\\src\" -Recurse | Where-Object { !$_.PSIsContainer } | Select-Object FullName)"
+      "PowerShell(Get-ChildItem -Path \"D:\\\\whatsapp-frontend\\\\src\" -Recurse | Where-Object { !$_.PSIsContainer } | Select-Object FullName)",
+      "Bash(cd /d \"d:\\\\whatsapp-server-side\")",
+      "Bash(node -e \"console.log\\('Node version:', process.version\\)\")"
     ]
   }
 }
