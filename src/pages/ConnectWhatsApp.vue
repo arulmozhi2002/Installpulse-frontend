@@ -155,10 +155,10 @@ onUnmounted(() => {
               <p class="text-[#8696a0]">Restoring session, please wait...</p>
             </div>
 
-            <div v-else-if="status === 'disconnected' && !qrText" class="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center">
+            <div v-else-if="status === 'disconnected' && !qrText" class="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center px-6">
               <Loader2 class="w-10 h-10 text-[#00a884] animate-spin mb-4" />
-              <p class="text-[#41525d] font-medium text-lg">Generating QR Code...</p>
-              <p class="text-[#8696a0] text-sm mt-1">First load may take up to 60 seconds</p>
+              <p class="text-[#41525d] font-medium text-lg">Connecting...</p>
+              <p class="text-[#8696a0] text-sm mt-1 text-center">Once ready, scan the QR or link with your phone number</p>
             </div>
 
             <!-- QR Code + Phone Number Option -->
