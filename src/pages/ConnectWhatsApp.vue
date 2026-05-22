@@ -154,14 +154,14 @@ onUnmounted(() => {
               </div>
             </div>
 
-            <div v-if="status === 'disconnected'" class="space-y-3">
+            <div class="space-y-3">
               <div>
                 <label class="block text-xs font-medium text-gray-500 mb-1">WhatsApp Number (with country code)</label>
                 <input
                   v-model="pairPhone"
                   type="tel"
                   placeholder="e.g. 919876543210"
-                  class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#00a884] focus:ring-1 focus:ring-[#00a884]"
+                  class="w-full bg-white text-gray-900 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#00a884] focus:ring-1 focus:ring-[#00a884] placeholder-gray-400"
                   :disabled="pairLoading"
                   @keyup.enter="handlePairRequest"
                 />
@@ -186,12 +186,6 @@ onUnmounted(() => {
               </div>
 
               <p v-if="pairError" class="text-xs text-red-500 text-center mt-1">{{ pairError }}</p>
-            </div>
-
-            <!-- Server starting up -->
-            <div v-else class="flex flex-col items-center py-6">
-              <Loader2 class="w-8 h-8 text-[#00a884] animate-spin mb-3" />
-              <p class="text-sm text-[#8696a0] text-center">Server starting up, please wait...</p>
             </div>
           </div>
 
