@@ -1,5 +1,5 @@
 <script setup>
-import { Smartphone, Check, Loader2, MessageSquare, RefreshCw } from 'lucide-vue-next'
+import { Smartphone, Check, Loader2, MessageSquare, RefreshCw, Phone } from 'lucide-vue-next'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAppStore } from '../stores/useAppStore'
 
@@ -11,6 +11,13 @@ const phoneNumber = computed(() => store.phoneNumber)
 const recentMessages = computed(() => store.messages.slice(0, 4))
 const isLoggingOut = ref(false)
 
+// Pairing code state
+const showPairForm = ref(false)
+const pairPhone = ref('')
+const pairCode = ref('')
+const pairLoading = ref(false)
+const pairError = ref('')
+
 const qrImageUrl = computed(() => {
   if (!qrText.value) return null
   return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrText.value)}`
@@ -18,8 +25,26 @@ const qrImageUrl = computed(() => {
 
 const handleLogout = async () => {
   isLoggingOut.value = true
+  pairCode.value = ''
+  pairError.value = ''
+  showPairForm.value = false
   await store.logout().catch(() => {})
   isLoggingOut.value = false
+}
+
+const handlePairRequest = async () => {
+  if (!pairPhone.value) return
+  pairLoading.value = true
+  pairError.value = ''
+  pairCode.value = ''
+  try {
+    const code = await store.requestPairingCode(pairPhone.value)
+    pairCode.value = code
+  } catch (e) {
+    pairError.value = e?.response?.data?.error || e.message || 'Failed to get code'
+  } finally {
+    pairLoading.value = false
+  }
 }
 
 let stopStatusPolling = null
@@ -133,12 +158,54 @@ onUnmounted(() => {
             <div v-else-if="status === 'disconnected' && !qrText" class="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center">
               <Loader2 class="w-10 h-10 text-[#00a884] animate-spin mb-4" />
               <p class="text-[#41525d] font-medium text-lg">Generating QR Code...</p>
-              <p class="text-[#8696a0] text-sm mt-1">This may take up to 30 seconds</p>
+              <p class="text-[#8696a0] text-sm mt-1">First load may take up to 60 seconds</p>
             </div>
 
-            <!-- The QR Code Image -->
-            <div v-else class="p-2 bg-white rounded-xl shadow-sm border border-gray-100 relative z-10">
-              <img :src="qrImageUrl" alt="WhatsApp QR Code" class="w-[264px] h-[264px] object-contain" />
+            <!-- QR Code + Phone Number Option -->
+            <div v-else class="flex flex-col items-center gap-4 relative z-10 w-full">
+              <div v-if="!showPairForm" class="p-2 bg-white rounded-xl shadow-sm border border-gray-100">
+                <img :src="qrImageUrl" alt="WhatsApp QR Code" class="w-[264px] h-[264px] object-contain" />
+              </div>
+
+              <!-- Toggle -->
+              <button
+                @click="showPairForm = !showPairForm; pairCode = ''; pairError = ''"
+                class="flex items-center gap-2 text-sm text-[#00a884] hover:underline font-medium"
+              >
+                <Phone class="w-4 h-4" />
+                {{ showPairForm ? 'Scan QR code instead' : 'Link with phone number instead' }}
+              </button>
+
+              <!-- Phone number form -->
+              <div v-if="showPairForm" class="w-full px-2">
+                <p class="text-xs text-gray-500 mb-2 text-center">Enter your number with country code (e.g. 919876543210)</p>
+                <div class="flex gap-2">
+                  <input
+                    v-model="pairPhone"
+                    type="tel"
+                    placeholder="919876543210"
+                    class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#00a884]"
+                    :disabled="pairLoading"
+                    @keyup.enter="handlePairRequest"
+                  />
+                  <button
+                    @click="handlePairRequest"
+                    :disabled="pairLoading || !pairPhone"
+                    class="bg-[#00a884] text-white px-4 py-2 rounded-lg text-sm font-medium disabled:opacity-50 whitespace-nowrap"
+                  >
+                    {{ pairLoading ? '...' : 'Get Code' }}
+                  </button>
+                </div>
+
+                <!-- Pairing code display -->
+                <div v-if="pairCode" class="mt-3 bg-[#f0fdf4] border border-green-200 rounded-xl p-4 text-center">
+                  <p class="text-xs text-gray-500 mb-1">Enter this code in WhatsApp</p>
+                  <p class="text-3xl font-bold tracking-widest text-[#00a884]">{{ pairCode }}</p>
+                  <p class="text-xs text-gray-400 mt-2">Settings → Linked Devices → Link a Device → Link with phone number</p>
+                </div>
+
+                <p v-if="pairError" class="mt-2 text-xs text-red-500 text-center">{{ pairError }}</p>
+              </div>
             </div>
           </div>
           

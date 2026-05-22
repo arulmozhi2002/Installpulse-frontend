@@ -33,6 +33,11 @@ export const useAppStore = defineStore('app', () => {
     } catch (e) {}
   }
 
+  const requestPairingCode = async (phoneNumber) => {
+    const res = await axios.post(`${BASE}/api/pair`, { phoneNumber })
+    return res.data.code
+  }
+
   const simulate = async (text) => {
     await axios.post(`${BASE}/api/simulate`, { text })
     await fetchMessages()
@@ -98,6 +103,7 @@ export const useAppStore = defineStore('app', () => {
     fetchStatus,
     simulate,
     logout,
+    requestPairingCode,
     startStatusPolling,
     startMessagesPolling,
   }
