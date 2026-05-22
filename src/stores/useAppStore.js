@@ -12,7 +12,7 @@ export const useAppStore = defineStore('app', () => {
   const qrText = ref(null)
   const phoneNumber = ref('')
 
-  let statusInterval = null
+  let statusTimer = null
   let messagesInterval = null
   let statusSubscribers = 0
   let messagesSubscribers = 0
@@ -50,14 +50,26 @@ export const useAppStore = defineStore('app', () => {
   const startStatusPolling = () => {
     statusSubscribers++
     if (statusSubscribers === 1) {
-      fetchStatus()
-      statusInterval = setInterval(fetchStatus, 5000)
+      const tick = async () => {
+        const prev = status.value
+        await fetchStatus()
+        // Immediately load messages the moment connection is detected
+        if (prev !== 'connected' && status.value === 'connected') {
+          fetchMessages()
+        }
+        if (statusSubscribers > 0) {
+          // Poll fast while waiting for QR scan, slow once connected
+          const delay = status.value === 'connected' ? 8000 : 2000
+          statusTimer = setTimeout(tick, delay)
+        }
+      }
+      tick()
     }
     return () => {
       statusSubscribers--
-      if (statusSubscribers === 0 && statusInterval) {
-        clearInterval(statusInterval)
-        statusInterval = null
+      if (statusSubscribers === 0 && statusTimer) {
+        clearTimeout(statusTimer)
+        statusTimer = null
       }
     }
   }
@@ -66,7 +78,7 @@ export const useAppStore = defineStore('app', () => {
     messagesSubscribers++
     if (messagesSubscribers === 1) {
       fetchMessages()
-      messagesInterval = setInterval(fetchMessages, 10000)
+      messagesInterval = setInterval(fetchMessages, 3000)
     }
     return () => {
       messagesSubscribers--
