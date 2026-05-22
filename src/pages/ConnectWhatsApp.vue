@@ -1,6 +1,6 @@
 <script setup>
-import { Smartphone, Check, Loader2, MessageSquare } from 'lucide-vue-next'
-import { computed, onMounted, onUnmounted } from 'vue'
+import { Smartphone, Check, Loader2, MessageSquare, RefreshCw } from 'lucide-vue-next'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useAppStore } from '../stores/useAppStore'
 
 const store = useAppStore()
@@ -9,11 +9,18 @@ const status = computed(() => store.status)
 const qrText = computed(() => store.qrText)
 const phoneNumber = computed(() => store.phoneNumber)
 const recentMessages = computed(() => store.messages.slice(0, 4))
+const isLoggingOut = ref(false)
 
 const qrImageUrl = computed(() => {
   if (!qrText.value) return null
   return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrText.value)}`
 })
+
+const handleLogout = async () => {
+  isLoggingOut.value = true
+  await store.logout().catch(() => {})
+  isLoggingOut.value = false
+}
 
 let stopStatusPolling = null
 let stopMessagesPolling = null
@@ -105,19 +112,28 @@ onUnmounted(() => {
             <router-link to="/app/dashboard" class="w-full block bg-[#00a884] hover:bg-[#06cf9c] text-white px-8 py-3 rounded-xl font-medium transition-colors shadow-md text-center">
               Go to Full Dashboard
             </router-link>
+            <button
+              @click="handleLogout"
+              :disabled="isLoggingOut"
+              class="w-full flex items-center justify-center gap-2 mt-3 px-8 py-2.5 rounded-xl border border-red-200 text-red-500 hover:bg-red-50 transition-colors text-sm font-medium disabled:opacity-50"
+            >
+              <RefreshCw class="w-4 h-4" :class="{ 'animate-spin': isLoggingOut }" />
+              {{ isLoggingOut ? 'Disconnecting...' : 'Disconnect / Re-scan QR' }}
+            </button>
           </div>
 
           <div v-else class="relative min-h-[300px] flex items-center justify-center">
             <!-- Loading States -->
             <div v-if="status === 'authenticating'" class="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center text-center px-4">
               <Loader2 class="w-10 h-10 text-[#00a884] animate-spin mb-4" />
-              <p class="text-[#41525d] font-medium text-lg mb-1">Authenticating...</p>
-              <p class="text-[#8696a0]">Syncing messages, please wait...</p>
+              <p class="text-[#41525d] font-medium text-lg mb-1">Connecting...</p>
+              <p class="text-[#8696a0]">Restoring session, please wait...</p>
             </div>
-            
+
             <div v-else-if="status === 'disconnected' && !qrText" class="absolute inset-0 bg-white/95 z-20 flex flex-col items-center justify-center">
               <Loader2 class="w-10 h-10 text-[#00a884] animate-spin mb-4" />
               <p class="text-[#41525d] font-medium text-lg">Generating QR Code...</p>
+              <p class="text-[#8696a0] text-sm mt-1">This may take up to 30 seconds</p>
             </div>
 
             <!-- The QR Code Image -->

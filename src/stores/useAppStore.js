@@ -38,6 +38,14 @@ export const useAppStore = defineStore('app', () => {
     await fetchMessages()
   }
 
+  const logout = async () => {
+    await axios.post(`${BASE}/api/logout`)
+    status.value = 'disconnected'
+    qrText.value = null
+    phoneNumber.value = ''
+    await fetchStatus()
+  }
+
   // Returns a cleanup function — call it in onUnmounted
   const startStatusPolling = () => {
     statusSubscribers++
@@ -75,7 +83,9 @@ export const useAppStore = defineStore('app', () => {
     qrText,
     phoneNumber,
     fetchMessages,
+    fetchStatus,
     simulate,
+    logout,
     startStatusPolling,
     startMessagesPolling,
   }
