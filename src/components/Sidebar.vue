@@ -23,7 +23,7 @@ const handleLogout = () => {
 
 const checkStatus = async () => {
   try {
-    const res = await axios.get('https://installpulse-serverside.onrender.com/api/status')
+    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/status' : 'http://localhost:3000/api/status'))
     if (res.data.status === 'connected') {
       phoneNumber.value = res.data.number || 'Device Connected'
     } else {

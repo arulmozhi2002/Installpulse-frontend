@@ -1,19 +1,34 @@
 <script setup>
-import { Smartphone, Check, Loader2 } from 'lucide-vue-next'
+import { Smartphone, Check, Loader2, MessageSquare } from 'lucide-vue-next'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import axios from 'axios'
 
 const status = ref('disconnected')
 const qrText = ref(null)
 const phoneNumber = ref('')
+const recentMessages = ref([])
 let pollInterval = null
+
+const fetchRecentMessages = async () => {
+  if (status.value !== 'connected') return;
+  try {
+    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/messages' : 'http://localhost:3000/api/messages'))
+    recentMessages.value = res.data.slice(0, 4) // Show top 4 recent messages
+  } catch (error) {
+    console.error("Failed to load messages", error)
+  }
+}
 
 const checkStatus = async () => {
   try {
-    const res = await axios.get('https://installpulse-serverside.onrender.com/api/status')
+    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/status' : 'http://localhost:3000/api/status'))
     status.value = res.data.status
     qrText.value = res.data.qr
     phoneNumber.value = res.data.number || ''
+    
+    if (status.value === 'connected') {
+        fetchRecentMessages();
+    }
   } catch (error) {
     console.error("Failed to fetch WhatsApp status", error)
   }
@@ -78,14 +93,39 @@ const qrImageUrl = computed(() => {
         <!-- Right Side: QR Code Area -->
         <div class="md:w-[400px] bg-white p-10 flex flex-col items-center justify-center relative border-l border-gray-100">
           
-          <div v-if="status === 'connected'" class="flex flex-col items-center justify-center text-center">
-            <div class="w-20 h-20 bg-[#25D366] rounded-full flex items-center justify-center mb-6 shadow-lg">
-              <Check class="w-10 h-10 text-white" />
+          <div v-if="status === 'connected'" class="flex flex-col items-center justify-center text-center w-full">
+            <div class="w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center mb-4 shadow-lg">
+              <Check class="w-8 h-8 text-white" />
             </div>
-            <h3 class="text-2xl font-light text-[#41525d] mb-2">Device Connected</h3>
-            <p class="text-[#8696a0] mb-8 text-lg">{{ phoneNumber || 'Initializing...' }}</p>
-            <router-link to="/app/dashboard" class="bg-[#00a884] hover:bg-[#06cf9c] text-white px-8 py-3 rounded-full font-medium transition-colors shadow-md">
-              Open Dashboard
+            <h3 class="text-xl font-light text-[#41525d] mb-1">Device Connected</h3>
+            <p class="text-[#8696a0] mb-6 text-sm">{{ phoneNumber || 'Active Session' }}</p>
+            
+            <div class="w-full text-left mb-6" v-if="recentMessages.length > 0">
+                <div class="flex items-center gap-2 mb-3">
+                  <MessageSquare class="w-4 h-4 text-green-500" />
+                  <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Live Feed Preview</span>
+                </div>
+                <div class="space-y-2 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
+                    <div v-for="msg in recentMessages" :key="msg.id" class="bg-gray-50 p-3 rounded-lg border border-gray-100 text-sm shadow-sm">
+                        <div class="flex items-start gap-2 mb-1">
+                            <img v-if="msg.senderDp" :src="msg.senderDp" class="w-6 h-6 rounded-full object-cover shrink-0" />
+                            <div v-else class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-500 shrink-0">
+                                {{ msg.sender.charAt(0).toUpperCase() }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-medium text-gray-700 truncate pr-2">{{ msg.sender }}</span>
+                                    <span class="text-[10px] text-gray-400 whitespace-nowrap">{{ msg.time }}</span>
+                                </div>
+                                <p class="text-gray-600 line-clamp-2 text-xs leading-relaxed mt-0.5">{{ msg.message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <router-link to="/app/dashboard" class="w-full block bg-[#00a884] hover:bg-[#06cf9c] text-white px-8 py-3 rounded-xl font-medium transition-colors shadow-md text-center">
+              Go to Full Dashboard
             </router-link>
           </div>
 

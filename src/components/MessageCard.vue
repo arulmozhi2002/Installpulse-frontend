@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle2, Clock, MapPin, Wrench } from 'lucide-vue-nex
 
 const props = defineProps({
   sender: String,
+  senderDp: String,
   group: String,
   message: String,
   time: String,
@@ -44,7 +45,8 @@ const severityConfig = computed(() => {
   <div class="bg-card border-y border-r border-slate-700/50 rounded-r-xl border-l-4 p-5 hover:bg-slate-800/50 transition-all duration-200 shadow-sm" :class="severityConfig.border">
     <div class="flex justify-between items-start gap-4 mb-3">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 font-medium">
+        <img v-if="senderDp" :src="senderDp" class="w-10 h-10 rounded-full object-cover shrink-0" />
+        <div v-else class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-300 font-medium shrink-0">
           {{ sender.charAt(0) }}
         </div>
         <div>

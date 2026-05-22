@@ -9,7 +9,7 @@ let pollInterval = null
 
 const fetchMessages = async () => {
   try {
-    const res = await axios.get('https://installpulse-serverside.onrender.com/api/messages')
+    const res = await axios.get((import.meta.env.PROD ? 'https://installpulse-serverside.onrender.com/api/messages' : 'http://localhost:3000/api/messages'))
     messages.value = res.data
   } catch (error) {
     console.error("Failed to load messages", error)
@@ -89,7 +89,13 @@ const severityClass = (severity) => {
         <div class="divide-y divide-slate-700/50 flex-1 overflow-y-auto">
           <div v-for="item in recentActivity" :key="item.id" class="p-6 hover:bg-slate-800/50 transition-colors">
             <div class="flex items-start gap-4">
-              <div 
+              <div v-if="item.senderDp" class="w-10 h-10 rounded-full flex-shrink-0 relative">
+                <img :src="item.senderDp" class="w-full h-full rounded-full object-cover" />
+                <div class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-card flex items-center justify-center" :class="severityClass(item.severity)">
+                   <div class="w-2 h-2 rounded-full bg-current"></div>
+                </div>
+              </div>
+              <div v-else
                 class="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center border"
                 :class="severityClass(item.severity)"
               >
