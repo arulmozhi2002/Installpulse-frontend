@@ -57,7 +57,7 @@ onUnmounted(() => {
     <div class="relative z-10 max-w-[1000px] mx-auto pt-10">
       <div class="flex items-center gap-3 mb-8 px-4 sm:px-0">
         <Smartphone class="w-8 h-8 text-white" />
-        <span class="text-sm font-medium text-white uppercase tracking-widest">InstallPulse Web</span>
+        <span class="text-sm font-medium text-white uppercase tracking-widest">Pulse Web</span>
       </div>
 
       <div class="bg-white rounded-lg shadow-xl overflow-hidden flex flex-col md:flex-row min-h-[400px]">
@@ -65,7 +65,7 @@ onUnmounted(() => {
         <!-- Left: Instructions -->
         <div class="flex-1 p-10 md:p-14">
           <h2 class="text-[28px] font-light text-[#41525d] mb-10 leading-tight">
-            Use InstallPulse on your computer
+            Use Pulse on your computer
           </h2>
           <ol class="space-y-6 text-[18px] text-[#3b4a54] font-light list-none p-0">
             <li class="flex items-start gap-4">

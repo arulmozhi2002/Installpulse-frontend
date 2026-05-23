@@ -20,7 +20,7 @@ const phoneNumber = computed(() =>
 )
 
 const handleLogout = () => {
-  localStorage.removeItem('installpulse_auth')
+  localStorage.removeItem('pulse_auth')
   router.push('/')
 }
 
@@ -44,7 +44,7 @@ const navigation = [
         <div class="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center border border-primary/30">
           <Activity class="w-5 h-5 text-primary" />
         </div>
-        <span class="text-xl font-bold tracking-tight text-white">InstallPulse</span>
+        <span class="text-xl font-bold tracking-tight text-white">Pulse</span>
       </div>
     </div>
 

@@ -30,8 +30,8 @@ const handleAuth = () => {
       return
   }
 
-  localStorage.setItem('installpulse_auth', 'true')
-  localStorage.setItem('installpulse_tenant', tenantId)
+  localStorage.setItem('pulse_auth', 'true')
+  localStorage.setItem('pulse_tenant', tenantId)
   errorMsg.value = ''
   router.push('/app/connect')
 }
@@ -48,7 +48,7 @@ const handleAuth = () => {
         <Activity class="w-12 h-12" />
       </div>
       <h2 class="mt-6 text-center text-3xl font-extrabold text-white tracking-tight">
-        {{ isSignUp ? 'Create your account' : 'Sign in to InstallPulse' }}
+        {{ isSignUp ? 'Create your account' : 'Sign in to Pulse' }}
       </h2>
       <p class="mt-2 text-center text-sm text-slate-400">
         The simplified WhatsApp Operations Dashboard
@@ -73,7 +73,7 @@ const handleAuth = () => {
               Email address
             </label>
             <div class="mt-1">
-              <input v-model="email" id="email" name="email" type="email" required class="appearance-none block w-full px-3 py-2 border border-slate-700 rounded-lg shadow-sm bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="admin@installpulse.com">
+              <input v-model="email" id="email" name="email" type="email" required class="appearance-none block w-full px-3 py-2 border border-slate-700 rounded-lg shadow-sm bg-slate-900/50 text-white placeholder-slate-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm" placeholder="admin@pulse.com">
             </div>
           </div>
 

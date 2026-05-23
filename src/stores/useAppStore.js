@@ -8,7 +8,7 @@ const BASE = import.meta.env.PROD
 
 const api = axios.create({ baseURL: BASE })
 api.interceptors.request.use(config => {
-  const tenantId = localStorage.getItem('installpulse_tenant')
+  const tenantId = localStorage.getItem('pulse_tenant')
   if (tenantId) config.headers['x-tenant-id'] = tenantId
   return config
 })

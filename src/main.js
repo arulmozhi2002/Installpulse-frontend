@@ -7,7 +7,7 @@ import axios from 'axios'
 
 // Global Axios configuration for Multi-Tenant
 axios.interceptors.request.use((config) => {
-  const tenantId = localStorage.getItem('installpulse_tenant')
+  const tenantId = localStorage.getItem('pulse_tenant')
   if (tenantId) {
     config.headers['X-Tenant-ID'] = tenantId
   }
