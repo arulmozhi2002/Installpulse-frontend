@@ -6,6 +6,13 @@ const BASE = import.meta.env.PROD
   ? 'https://installpulse-serverside.onrender.com'
   : 'http://localhost:3000'
 
+const api = axios.create({ baseURL: BASE })
+api.interceptors.request.use(config => {
+  const tenantId = localStorage.getItem('installpulse_tenant')
+  if (tenantId) config.headers['x-tenant-id'] = tenantId
+  return config
+})
+
 export const useAppStore = defineStore('app', () => {
   const messages = ref([])
   const status = ref('disconnected')
@@ -23,14 +30,14 @@ export const useAppStore = defineStore('app', () => {
       return
     }
     try {
-      const res = await axios.get(`${BASE}/api/messages`)
+      const res = await api.get('/api/messages')
       messages.value = res.data
     } catch (e) {}
   }
 
   const fetchStatus = async () => {
     try {
-      const res = await axios.get(`${BASE}/api/status`)
+      const res = await api.get('/api/status')
       status.value = res.data.status
       qrText.value = res.data.qr
       phoneNumber.value = res.data.number || ''
@@ -38,17 +45,17 @@ export const useAppStore = defineStore('app', () => {
   }
 
   const requestPairingCode = async (phoneNumber) => {
-    const res = await axios.post(`${BASE}/api/pair`, { phoneNumber })
+    const res = await api.post('/api/pair', { phoneNumber })
     return res.data.code
   }
 
   const simulate = async (text) => {
-    await axios.post(`${BASE}/api/simulate`, { text })
+    await api.post('/api/simulate', { text })
     await fetchMessages()
   }
 
   const logout = async () => {
-    await axios.post(`${BASE}/api/logout`)
+    await api.post('/api/logout')
     status.value = 'disconnected'
     qrText.value = null
     phoneNumber.value = ''
