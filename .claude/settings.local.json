@@ -17,7 +17,9 @@
       "Bash(find /root /usr/local/lib /usr/lib -name \"playwright\" -maxdepth 6)",
       "Bash(grep \"node_modules/playwright$\")",
       "Bash(node -e ' *)",
-      "Bash(dir D:\\\\whatsapp-server-side /B)"
+      "Bash(dir D:\\\\whatsapp-server-side /B)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
